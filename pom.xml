@@ -12,7 +12,7 @@
 	<artifactId>debt</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>debt</name>
-	<description>Telegram bot for debt calculatio</description>
+	<description>Telegram bot for debts calculation</description>
 
 	<properties>
 		<java.version>11</java.version>
@@ -59,6 +59,12 @@
 					<artifactId>junit-vintage-engine</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.telegram</groupId>
+			<artifactId>telegrambots</artifactId>
+			<version>5.0.1</version>
 		</dependency>
 
 	</dependencies>
