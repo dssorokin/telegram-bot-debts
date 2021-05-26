@@ -1,9 +1,8 @@
-create table if not exists group_chat
+create table if not exists 'group'
 (
     group_id bigserial not null
     constraint group_pkey
     primary key,
-    group_name text
 )
 ;
 
