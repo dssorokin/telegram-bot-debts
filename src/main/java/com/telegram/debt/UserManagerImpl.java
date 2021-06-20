@@ -1,15 +1,22 @@
 package com.telegram.debt;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.telegram.debt.model.Group;
 import com.telegram.debt.model.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
+@Slf4j
 public class UserManagerImpl implements UserManager {
 
     private final static Pattern LINK_PATTERN = Pattern.compile("@(\\w)");
@@ -19,6 +26,9 @@ public class UserManagerImpl implements UserManager {
 
     @Autowired
     private GroupDao groupDao;
+
+    @Autowired
+    private DebtAccountManager debtAccountManager;
 
     @Override
     public void registerUserInGroup(Long userId, Long groupId, String userName) {
@@ -37,13 +47,12 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public boolean isUserExisted(String userLink) {
+    public User findUserByLink(String userLink) {
         Matcher userLinkMatcher = LINK_PATTERN.matcher(userLink);
         if (userLinkMatcher.matches()) {
             final String userName = userLinkMatcher.group(1);
-            User user = userDao.findByName(userName);
-            return user != null;
+            return userDao.findByName(userName);
         }
-        return false;
+        return null;
     }
 }

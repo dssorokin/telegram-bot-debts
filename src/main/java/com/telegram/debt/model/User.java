@@ -24,4 +24,8 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "group_id")
     private Group group;
+
+    @Column(name = "summary_debts")
+    private String summaryDebts;
+
 }
