@@ -42,13 +42,7 @@ public class DebtAccountManagerImpl implements DebtAccountManager {
 		debtDao.save(newDebt);
 	}
 
-	private void updateUsersDebtsSummary(long lenderId, long borrowerId, BigDecimal debtAmount) {
-		userDao.findById(lenderId).ifPresent(lender -> {
-
-		});
-		User borrower = userDao.findById(borrowerId).orElse(null);
-
-
+	private void updateUsersDebtsSummary(User lender, User borrowerId, BigDecimal debtAmount) {
 
 	}
 
@@ -62,19 +56,4 @@ public class DebtAccountManagerImpl implements DebtAccountManager {
 		});
 		return summaryDebts;
 	}
-
-
-	//	private void xshareebtOnLeftParticipants(Long lenderId, Long groupId, BigDecimal debtAmount) {
-//		List<User> usersInTelegramGroup = userDao.findByGroupAndUserIdNot(groupId, lenderId);
-//		if (CollectionUtils.isEmpty(usersInTelegramGroup)) {
-//			log.error("No users in telegram group: {} registrated", groupId);
-//			return;
-//		}
-//
-//
-//		usersInTelegramGroup.forEach(user  -> {
-//			Debt partionedDebt = new Debt();
-//			partionedDebt.set
-//		});
-//	}
 }
