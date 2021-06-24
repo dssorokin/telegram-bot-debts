@@ -1,4 +1,4 @@
-package com.telegram.debt;
+package com.telegram.debt.exceptions;
 
 import lombok.Data;
 

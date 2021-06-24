@@ -16,4 +16,6 @@ public interface UserDao extends CrudRepository<User, Long> {
 
     @Query(value = "select name, summary_debts -> ?1 from users where group_id = ?2;", nativeQuery = true)
     public Map<String, BigDecimal> calculateDebtsSummaryForUser(String userName, long groupId);
+
+
 }
