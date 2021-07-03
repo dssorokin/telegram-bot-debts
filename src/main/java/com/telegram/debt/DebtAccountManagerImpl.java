@@ -25,6 +25,8 @@ import java.util.Map;
 @Slf4j
 public class DebtAccountManagerImpl implements DebtAccountManager {
 
+	public static final TypeReference<HashMap<String, BigDecimal>> TYPE_MAP = new TypeReference<HashMap<String, BigDecimal>>() {
+	};
 	@Autowired
 	private UserDao userDao;
 
@@ -66,8 +68,7 @@ public class DebtAccountManagerImpl implements DebtAccountManager {
 	}
 
 	private Map<String, BigDecimal> calculateNewSummaryForUsers(User fromUser, User toUser, BigDecimal debtAmount, boolean fromLender) throws JsonProcessingException {
-        TypeReference<HashMap<String, BigDecimal>> typeMap = new TypeReference<HashMap<String, BigDecimal>>() {};
-        Map<String, BigDecimal> mapSummaryDebtsForFromUser = objectMapper.readValue(fromUser.getSummaryDebts(), typeMap);
+        Map<String, BigDecimal> mapSummaryDebtsForFromUser = objectMapper.readValue(fromUser.getSummaryDebts(), TYPE_MAP);
         BigDecimal summaryAmounFromUserToUser = mapSummaryDebtsForFromUser.get(toUser.getName());
         if (summaryAmounFromUserToUser == null) {
             log.debug("Starts to count {}'s money in {}'s summary", toUser.getName(), fromUser.getName());
@@ -79,13 +80,13 @@ public class DebtAccountManagerImpl implements DebtAccountManager {
 	}
 
 	@Override
-	public Map<String, BigDecimal> calculateSummaryDebtsForUser(final String userName,final long groupId) {
-		Map<String, BigDecimal> summaryDebts = userDao.calculateDebtsSummaryForUser(userName, groupId);
-		summaryDebts.entrySet().forEach(onePersonPerDebt -> {
-			BigDecimal userDebt = onePersonPerDebt.getValue();
-			BigDecimal invertDebt = userDebt.compareTo(BigDecimal.ZERO) > 0 ? userDebt.negate() : userDebt.abs();
-			onePersonPerDebt.setValue(invertDebt);
-		});
-		return summaryDebts;
+	public Map<String, BigDecimal> getDebtsSummaryForUser(long userId) throws DebtException {
+		User user = userDao.findById(userId).orElseThrow(() -> new DebtException());
+
+		try {
+			return objectMapper.readValue(user.getSummaryDebts(), TYPE_MAP);
+		} catch (JsonProcessingException e) {
+			throw new DebtException();
+		}
 	}
 }

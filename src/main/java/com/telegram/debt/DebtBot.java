@@ -16,6 +16,8 @@ import org.telegram.abilitybots.api.objects.Privacy;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -178,6 +180,33 @@ public class DebtBot extends AbilityBot {
               }
           })
           .build();
+    }
+
+    public Ability printDebtsForMe() {
+        return Ability.builder()
+                .name("myDebts")
+                .input(0)
+                .info("Print user's debts")
+                .locality(Locality.ALL)
+                .privacy(Privacy.PUBLIC)
+                .action(ctx -> {
+                    try {
+                        Map<String, BigDecimal> summaryDebts = debtAccountManager.getDebtsSummaryForUser(ctx.user().getId());
+                        final String result = summaryDebts.entrySet().stream().map(DebtBot::printDebtsForUser).collect(Collectors.joining("\n"));
+                        silent.send(result, ctx.chatId());
+                    } catch (DebtException e) {
+                        sendCommonError(e, ctx);
+                    }
+                })
+                .build();
+    }
+
+    private static String printDebtsForUser(Map.Entry<String, BigDecimal> userDebtsEntry) {
+        if (userDebtsEntry.getValue().compareTo(BigDecimal.ZERO) < 0) {
+            return String.format("Вы должны %s пользователю %s", userDebtsEntry.getValue().abs(), userDebtsEntry.getKey());
+        } else {
+            return String.format("Пользователь %s вам должен %s", userDebtsEntry.getKey(), userDebtsEntry.getValue());
+        }
     }
 
     private void sendCommonError(DebtException e, MessageContext ctx) {
