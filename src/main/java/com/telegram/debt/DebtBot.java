@@ -184,7 +184,7 @@ public class DebtBot extends AbilityBot {
 
     public Ability printDebtsForMe() {
         return Ability.builder()
-                .name("myDebts")
+                .name("my_debts")
                 .input(0)
                 .info("Print user's debts")
                 .locality(Locality.ALL)
@@ -192,6 +192,10 @@ public class DebtBot extends AbilityBot {
                 .action(ctx -> {
                     try {
                         Map<String, BigDecimal> summaryDebts = debtAccountManager.getDebtsSummaryForUser(ctx.user().getId());
+                        if (summaryDebts.size() == 0) {
+                            silent.send("Вы никому должны и вам тоже.Успехов", ctx.chatId());
+                            return;
+                        }
                         final String result = summaryDebts.entrySet().stream().map(DebtBot::printDebtsForUser).collect(Collectors.joining("\n"));
                         silent.send(result, ctx.chatId());
                     } catch (DebtException e) {
