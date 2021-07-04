@@ -152,7 +152,7 @@ public class DebtBot extends AbilityBot {
 
                   borrowerLink = commandArguments.get(1);
                   User borrowerUser = userManager.findUserByLink(borrowerLink);
-                  if (borrowerLink != null) {
+                  if (borrowerUser != null) {
                       log.error("User with such link: {}", borrowerLink);
                       silent.send("Пользователя, которому вы хотяти занять денег, не зарегистрирован.", ctx.chatId());
                       return;

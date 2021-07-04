@@ -7,10 +7,11 @@ import org.springframework.data.repository.CrudRepository;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface UserDao extends CrudRepository<User, Long> {
 
-    User findByName(String userName);
+    Optional<User> findByName(String userName);
 
     List<User> findByGroupAndUserIdNot(Long groupId, Long userId);
 

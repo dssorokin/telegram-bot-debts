@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public class UserManagerImpl implements UserManager {
 
-    private final static Pattern LINK_PATTERN = Pattern.compile("@(\\w)");
+    private final static Pattern LINK_PATTERN = Pattern.compile("@(\\w+)");
 
     @Autowired
     private UserDao userDao;
@@ -32,18 +32,26 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public void registerUserInGroup(Long userId, Long groupId, String userName) {
+        User user = userDao.findByName(userName).orElse(null);
+
+        // we are doing nothing
+        // if user already exists
+        if (user != null) {
+            return;
+        }
+
         final Group group = groupDao.findById(groupId).orElseGet(() -> {
             Group newGroup = new Group();
             newGroup.setGroupId(groupId);
             return groupDao.save(newGroup);
         });
 
-        User user = new User();
-        user.setUserId(userId);
-        user.setGroup(group);
-        user.setName(userName);
-        user.setShipmentDate(new Date());
-        userDao.save(user);
+        User newUser = new User();
+        newUser.setUserId(userId);
+        newUser.setGroup(group);
+        newUser.setName(userName);
+        newUser.setShipmentDate(new Date());
+        userDao.save(newUser);
     }
 
     @Override
@@ -51,7 +59,7 @@ public class UserManagerImpl implements UserManager {
         Matcher userLinkMatcher = LINK_PATTERN.matcher(userLink);
         if (userLinkMatcher.matches()) {
             final String userName = userLinkMatcher.group(1);
-            return userDao.findByName(userName);
+            return userDao.findByName(userName).orElse(null);
         }
         return null;
     }

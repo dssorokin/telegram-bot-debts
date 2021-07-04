@@ -54,12 +54,8 @@ public class DebtAccountManagerImpl implements DebtAccountManager {
 
 	private void updateUsersDebtsSummary(User lender, User borrower, BigDecimal debtAmount) throws DebtException {
 		try {
-			lender.setSummaryDebts(objectMapper.writeValueAsString(
-			  calculateNewSummaryForUsers(lender, borrower, debtAmount, true)
-            ));
-			borrower.setSummaryDebts(objectMapper.writeValueAsString(
-			  calculateNewSummaryForUsers(borrower, lender, debtAmount, false)
-            ));
+			lender.setSummaryDebts(calculateNewSummaryForUsers(lender, borrower, debtAmount, true));
+			borrower.setSummaryDebts(calculateNewSummaryForUsers(borrower, lender, debtAmount, false));
 
 			userDao.saveAll(Arrays.asList(lender, borrower));
 		} catch (JsonProcessingException e) {
@@ -68,7 +64,7 @@ public class DebtAccountManagerImpl implements DebtAccountManager {
 	}
 
 	private Map<String, BigDecimal> calculateNewSummaryForUsers(User fromUser, User toUser, BigDecimal debtAmount, boolean fromLender) throws JsonProcessingException {
-        Map<String, BigDecimal> mapSummaryDebtsForFromUser = objectMapper.readValue(fromUser.getSummaryDebts(), TYPE_MAP);
+        Map<String, BigDecimal> mapSummaryDebtsForFromUser = fromUser.getSummaryDebts();
         BigDecimal summaryAmounFromUserToUser = mapSummaryDebtsForFromUser.get(toUser.getName());
         if (summaryAmounFromUserToUser == null) {
             log.debug("Starts to count {}'s money in {}'s summary", toUser.getName(), fromUser.getName());
@@ -82,11 +78,6 @@ public class DebtAccountManagerImpl implements DebtAccountManager {
 	@Override
 	public Map<String, BigDecimal> getDebtsSummaryForUser(long userId) throws DebtException {
 		User user = userDao.findById(userId).orElseThrow(() -> new DebtException());
-
-		try {
-			return objectMapper.readValue(user.getSummaryDebts(), TYPE_MAP);
-		} catch (JsonProcessingException e) {
-			throw new DebtException();
-		}
+		return user.getSummaryDebts();
 	}
 }
