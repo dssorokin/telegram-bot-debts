@@ -1,10 +1,9 @@
-create table if not exists 'group'
+create table if not exists telegram_group
 (
     group_id bigserial not null
     constraint group_pkey
-    primary key,
-)
-;
+    primary key
+);
 
 create table if not exists users
 (
@@ -15,7 +14,7 @@ create table if not exists users
     shipment_date date,
     group_id bigserial not null
     constraint users_group_group_id_fk
-    references "group_chat"
+    references telegram_group
     on delete cascade
 );
 
