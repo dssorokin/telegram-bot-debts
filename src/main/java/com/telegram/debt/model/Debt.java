@@ -27,4 +27,7 @@ public class Debt {
 
     @Column(name = "amount")
     private BigDecimal amount;
+
+    @Column(name = "description")
+    private String description;
 }
