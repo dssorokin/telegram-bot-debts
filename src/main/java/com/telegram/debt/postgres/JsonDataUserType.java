@@ -24,8 +24,7 @@ import java.util.Map;
  */
 public class JsonDataUserType implements UserType {
 
-	@Autowired
-	private ObjectMapper objectMapper;
+	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Override
 	public int[] sqlTypes() {
@@ -73,8 +72,8 @@ public class JsonDataUserType implements UserType {
 		}
 
 		Map resultMap = new HashMap<>();
-		Map<?, ?> tempMap = (Map<?, ?>) originalValue;
-		tempMap.forEach((key, value) -> resultMap.put((String) key, (String) value));
+		Map<String, BigDecimal> tempMap = (Map<String, BigDecimal>) originalValue;
+		tempMap.forEach((key, value) -> resultMap.put((String) key, (BigDecimal) value));
 
 		return resultMap;
 	}

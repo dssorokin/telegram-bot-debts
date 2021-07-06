@@ -49,6 +49,7 @@ public class DebtAccountManagerImpl implements DebtAccountManager {
 		newDebt.setFromUser(lenderId);
 		newDebt.setToUser(borrowerId);
 		newDebt.setCreatedDate(new Date());
+		newDebt.setDescription(debtDescription);
 		debtDao.save(newDebt);
 	}
 
@@ -68,7 +69,7 @@ public class DebtAccountManagerImpl implements DebtAccountManager {
         BigDecimal summaryAmounFromUserToUser = mapSummaryDebtsForFromUser.get(toUser.getName());
         if (summaryAmounFromUserToUser == null) {
             log.debug("Starts to count {}'s money in {}'s summary", toUser.getName(), fromUser.getName());
-            mapSummaryDebtsForFromUser.put(fromUser.getName(), fromLender ? debtAmount : debtAmount.negate());
+            mapSummaryDebtsForFromUser.put(toUser.getName(), fromLender ? debtAmount : debtAmount.negate());
         } else {
             mapSummaryDebtsForFromUser.put(toUser.getName(), fromLender ? summaryAmounFromUserToUser.add(debtAmount) : summaryAmounFromUserToUser.subtract(debtAmount));
         }
