@@ -33,6 +33,8 @@ public class DebtAccountManagerImpl implements DebtAccountManager {
 	@Autowired
 	private DebtDao debtDao;
 
+
+
 	@Autowired
 	private ObjectMapper objectMapper;
 
@@ -80,5 +82,10 @@ public class DebtAccountManagerImpl implements DebtAccountManager {
 	public Map<String, BigDecimal> getDebtsSummaryForUser(long userId) throws DebtException {
 		User user = userDao.findById(userId).orElseThrow(() -> new DebtException());
 		return user.getSummaryDebts();
+	}
+
+	@Override
+	public void payForDebt(Long debtorId, String lenderName, BigDecimal paidDebtAmount) throws NoSuchUserException {
+
 	}
 }

@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Component
@@ -26,6 +27,8 @@ public class DebtBot extends AbilityBot {
     private final static String BOT_TOKEN = "1551656674:AAESrmUK4vR8Pw4Rdq3CPSPGTRL0qlJ8Lro";
     private final static String BOT_USERNAME = "FriendsDebtsBot";
     private final static String COMMON_ERROR = "Что-то пошло не так. Попробуйте ваш запрос позже.";
+    private final static Pattern LINK_PATTERN = Pattern.compile("@(\\w+)");
+
     @Value("${telegram.creator.bots.id}")
     private long CREATOR_ID;
 
@@ -200,6 +203,36 @@ public class DebtBot extends AbilityBot {
                         silent.send(result, ctx.chatId());
                     } catch (DebtException e) {
                         sendCommonError(e, ctx);
+                    }
+                })
+                .build();
+    }
+
+    public Ability payForDebt() {
+        return Ability.builder()
+                .name("pay")
+                .input(2)
+                .info("Pay for debts")
+                .locality(Locality.ALL)
+                .privacy(Privacy.PUBLIC)
+                .action(ctx -> {
+                    BigDecimal payedDebtAmount;
+
+                    List<String> commandArguments = Arrays.asList(ctx.arguments());
+
+                    try {
+                        payedDebtAmount = new BigDecimal(commandArguments.get(0));
+                    } catch (NumberFormatException e) {
+                        log.error("First argument isn't number format. {}", commandArguments.get(0), e);
+                        silent.send("Укажите первым сумму долга", ctx.chatId());
+                        return;
+                    }
+
+                    try {
+                        debtAccountManager.payForDebt(ctx.user().getId(), commandArguments.get(1), payedDebtAmount);
+                    } catch (NoSuchUserException e) {
+                        e.printStackTrace();
+                        log.warn("User with such id: {} doesn't exist", e.getUserId());
                     }
                 })
                 .build();
