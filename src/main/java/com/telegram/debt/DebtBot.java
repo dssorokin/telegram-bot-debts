@@ -59,7 +59,13 @@ public class DebtBot extends AbilityBot {
               Long user = ctx.user().getId();
               Long groupId = ctx.chatId();
               String userName = ctx.user().getUserName();
-              userManager.registerUserInGroup(user, groupId, userName);
+              try {
+                  userManager.registerUserInGroup(user, groupId, userName);
+                  silent.send("Регистрация прошла успешно!", ctx.chatId());
+              } catch (Exception e) {
+                  log.error("Error occurred in registration process", e);
+                  sendCommonError(e, ctx);
+              }
           })
           .build();
     }
@@ -228,11 +234,19 @@ public class DebtBot extends AbilityBot {
                         return;
                     }
 
+                    if (!LINK_PATTERN.asMatchPredicate().test(commandArguments.get(1))) {
+                        log.warn("The username {} doesn't match pattern.", commandArguments.get(1));
+                        silent.send("Имя пользователя должно начинаться с @", ctx.chatId());
+                        return;
+                    }
+
                     try {
-                        debtAccountManager.payForDebt(ctx.user().getId(), commandArguments.get(1), payedDebtAmount);
+                        debtAccountManager.payForDebt(ctx.user().getId(), commandArguments.get(1), payedDebtAmount, ctx.chatId());
                     } catch (NoSuchUserException e) {
-                        e.printStackTrace();
-                        log.warn("User with such id: {} doesn't exist", e.getUserId());
+                        log.warn("User with such id: {} doesn't exist", e.getUserId(), e);
+                        silent.send("Пользователя с именем " + commandArguments.get(1)  +  " не существует", ctx.chatId());
+                    } catch (DebtException e) {
+                        sendCommonError(e, ctx);
                     }
                 })
                 .build();
@@ -246,7 +260,7 @@ public class DebtBot extends AbilityBot {
         }
     }
 
-    private void sendCommonError(DebtException e, MessageContext ctx) {
+    private void sendCommonError(Exception e, MessageContext ctx) {
         log.error("DebtException occurred for user: {}", ctx.user().getId(), e);
         silent.send(COMMON_ERROR, ctx.chatId());
     }

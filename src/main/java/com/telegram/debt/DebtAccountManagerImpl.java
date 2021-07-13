@@ -12,10 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author dsorokin on 24.03.2021
@@ -27,6 +26,8 @@ public class DebtAccountManagerImpl implements DebtAccountManager {
 
 	public static final TypeReference<HashMap<String, BigDecimal>> TYPE_MAP = new TypeReference<HashMap<String, BigDecimal>>() {
 	};
+	private final static Pattern LINK_PATTERN = Pattern.compile("@(\\w+)");
+
 	@Autowired
 	private UserDao userDao;
 
@@ -85,7 +86,19 @@ public class DebtAccountManagerImpl implements DebtAccountManager {
 	}
 
 	@Override
-	public void payForDebt(Long debtorId, String lenderName, BigDecimal paidDebtAmount) throws NoSuchUserException {
+	public void payForDebt(Long debtorId, String lenderLink, BigDecimal paidDebtAmount, final long groupId) throws NoSuchUserException, DebtException {
+		User lenderUser = findUserByLink(lenderLink).orElseThrow(() -> new NoSuchUserException(debtorId));
 
+		addDebtForGroup(paidDebtAmount,debtorId , lenderUser.getUserId(), groupId, "Отдача долга");
+	}
+
+
+	private Optional<User> findUserByLink(String userLink) {
+		Matcher userLinkMatcher = LINK_PATTERN.matcher(userLink);
+		if (userLinkMatcher.matches()) {
+			final String userName = userLinkMatcher.group(1);
+			return userDao.findByName(userName);
+		}
+		return Optional.empty();
 	}
 }

@@ -13,6 +13,6 @@ public interface DebtAccountManager {
 
 	Map<String, BigDecimal> getDebtsSummaryForUser(long userId) throws DebtException;
 
-	void payForDebt(final Long debtorId, final String lenderName ,final BigDecimal paidDebtAmount) throws NoSuchUserException;
+	void payForDebt(final Long debtorId, final String lenderName ,final BigDecimal paidDebtAmount, final long groupId) throws NoSuchUserException, DebtException;
 
 }
