@@ -1,0 +1,29 @@
+version: '3.7'
+
+services:
+  app:
+    image: 'telegram-bot-debts:latest'
+    build:
+      context: .
+    container_name: telegram-bot-debts
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/debts
+      - SPRING_DATASOURCE_USERNAME=compose-postgres
+      - SPRING_DATASOURCE_PASSWORD=compose-postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+  db:
+    image: 'postgres:13.1-alpine'
+    volumes:
+    - postgres-data:/var/lib/postgresql/data
+    container_name: db
+#    ports:
+#    - 5432:5432
+    environment:
+      - POSTGRES_DB=debts
+      - POSTGRES_USER=compose-postgres
+      - POSTGRES_PASSWORD=compose-postgres
+volumes:
+  postgres-data:
