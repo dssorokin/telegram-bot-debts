@@ -51,7 +51,7 @@ public class DebtBot extends AbilityBot {
     public Ability registerMe() {
         return Ability
           .builder()
-          .name("register_me")
+          .name("Зарегестрироваться")
           .info("Please use this command to register yourself")
           .locality(Locality.ALL)
           .privacy(Privacy.PUBLIC)
@@ -72,7 +72,7 @@ public class DebtBot extends AbilityBot {
 
     public Ability borrowMoney() {
         return Ability.builder()
-          .name("borrow")
+          .name("Занять")
           .input(3)
           .info("Borrow money")
           .locality(Locality.ALL)
@@ -133,7 +133,7 @@ public class DebtBot extends AbilityBot {
     public Ability lendMoney() {
         return Ability
           .builder()
-          .name("lend")
+          .name("Одолжить")
           .input(3)
           .info("Lend money")
           .locality(Locality.ALL)
@@ -193,7 +193,7 @@ public class DebtBot extends AbilityBot {
 
     public Ability printDebtsForMe() {
         return Ability.builder()
-                .name("my_debts")
+                .name("мои_долги")
                 .input(0)
                 .info("Print user's debts")
                 .locality(Locality.ALL)
@@ -216,7 +216,7 @@ public class DebtBot extends AbilityBot {
 
     public Ability payForDebt() {
         return Ability.builder()
-                .name("pay")
+                .name("заплатить")
                 .input(2)
                 .info("Pay for debts")
                 .locality(Locality.ALL)
